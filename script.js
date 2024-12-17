@@ -1,14 +1,14 @@
 // Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyDCsejsMETVR2APKia_8reaUUMgsaNoU2M",
-    authDomain: "readbuddy-8f615.firebaseapp.com",
-    databaseURL: "https://readbuddy-8f615-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "readbuddy-8f615",
-    storageBucket: "readbuddy-8f615.appspot.com",
-    messagingSenderId: "737869564487",
-    appId: "1:737869564487:web:bbb2e66173e169b218bf62",
-    measurementId: "G-10YPK6C93H"
+    apiKey: "*************",
+    authDomain: "**************",
+    databaseURL: "****************8888",
+    projectId: "**********",
+    storageBucket: "**********8",
+    messagingSenderId: "**********",
+    appId: "**************88",
+    measurementId: "************"
   };
 
 // Initialize Firebase
@@ -830,7 +830,7 @@ fileInput.addEventListener('change', (event) => {
             return;
         }
     
-        const apiKey = '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';
+        const apiKey = '**************************';
         const summaryContainer = document.getElementById('summaryText');
         summaryContainer.innerHTML = '<p>Generating summary... Please wait.</p><div class="loader"></div>';
     
