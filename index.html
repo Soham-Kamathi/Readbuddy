@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReadBuddy 2.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.5.207/pdf.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add this right before the closing </body> tag -->
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+</head>
+<body>
+
+    <!-- Add this after the opening <body> tag -->
+<div class="left-sidebar">
+    <div class="sidebar-toggle-left">☰</div>
+    <div class="sidebar-content">
+        <div id="user-profile" class="section card fade-in">
+            <h2>User Profile</h2>
+            <div id="profile-info"></div>
+            <div id="name-setting">
+                <input type="text" id="name-input" placeholder="Enter your name">
+                <button id="set-name-button">Set Name</button>
+            </div>
+        </div>
+        <div id="recent-activity" class="section card fade-in">
+            <h2>Recent Activity</h2>
+            <ul id="activity-list"></ul>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- Add this right after the opening <body> tag -->
+        <div id="login-section" class="section card fade-in">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button id="login-button">Login</button>
+            <button id="signup-button">Sign Up</button>
+            <button id="guest-login-button">Guest Login</button>
+            <div class="divider">or</div>
+            <div class="forgot-password">
+              <a href="#" id="forgot-password-link">Forgot Password?</a>
+            </div>
+            <div id="login-message"></div>
+          </div>
+
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#input-section">Input</a></li>
+                <li><a href="#summary-section">Summary</a></li>
+                <li><a href="#qa-section">Q&A</a></li>
+                <li><a href="#dictionary-section">Vocabulary</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="right-sidebar">
+            <div class="sidebar-toggle">&#9776;</div>
+            <div class="sidebar-content">
+                
+                
+                
+                <section id="timer-section" class="card fade-in">
+            <h2>Reading Timer and Goals</h2>
+            <div>
+                <label for="goalTime">Set Daily Goal (minutes):</label>
+                <input type="number" id="goalTime" min="1" value="30">
+                <button id="setGoalButton">Set Goal</button>
+            </div>
+            <div id="timerDisplay">00:00:00</div>
+            <button id="startTimerButton">Start Timer</button>
+            <button id="stopTimerButton">Stop Timer</button>
+            <div id="goalProgress"></div>
+        </section>
+    
+        <section id="annotation-section" class="card fade-in">
+            <h2>Annotations and Notes</h2>
+            <div id="annotationList"></div>
+            <textarea id="noteInput" placeholder="Add a note..."></textarea>
+            <button id="addNoteButton">Add Note</button>
+        </section>
+    </div>
+    </div>
+        <div class="gamification">
+            <div class="points"><i class="fas fa-star"></i> Points: <span id="points-value">0</span></div>
+            <div class="streak"><i class="fas fa-fire"></i> Streak: <span id="streak-value">0</span> days</div>
+            <div class="badges"><i class="fas fa-medal"></i> Badges: <span id="badges-value">0</span></div>
+        </div>
+
+        <section id="input-section" class="card fade-in">
+            <h1>Welcome to ReadBuddy 2.0!</h1>
+            <div class="file-drop-zone" id="file-drop-zone">
+                <p>Drag and drop your PDF or image here, or click to select a file</p>
+                <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png" hidden>
+            </div>
+            <div id="pdf-navigation" style="display: none;">
+                <label for="page-select">Go to page:</label>
+                <select id="page-select"></select>
+                <button id="go-to-page">Go</button>
+              </div>
+              <div id="current-page-text"></div>
+            <div id="loading-indicator" style="display: none;">
+                <p>Extracting text from image... <span id="progress-percentage">0%</span></p>
+            </div>
+            <div id="cropper-container" style="display: none;">
+                <div>
+                    <img id="image-to-crop" src="">
+                </div>
+                <div>
+                    <button id="crop-button">Crop and Extract Text</button>
+                    <button id="cancel-crop-button">Cancel</button>
+                </div>
+            </div>
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <textarea id="textInput" rows="10" placeholder="Type your story here..."></textarea>
+            <div>
+                <button id="startButton">Start Reading</button>
+                <button id="stopButton">Stop Reading</button>
+                <button id="summarizeButton">Summarize Text</button>
+            </div>
+            <div>
+                <label for="voiceSelect">Choose a Friendly Voice:</label>
+                <select id="voiceSelect"></select>
+            </div>
+            <div>
+                <label for="rateRange">Reading Speed:</label>
+                <input type="range" id="rateRange" min="0.5" max="2" step="0.1" value="1">
+                <span id="rateValue">1</span>
+            </div>
+            <div>
+                <label for="colorPicker">Highlight Color:</label>
+                <input type="color" id="colorPicker" value="#FFD600">
+            </div>
+        </section>
+        <div>
+            <label for="languageSelect">Choose Language:</label>
+            <select id="languageSelect"></select>
+        </div>
+        <div>
+            <label for="pitchRange">Pitch:</label>
+            <input type="range" id="pitchRange" min="0.5" max="2" step="0.1" value="1">
+            <span id="pitchValue">1</span>
+        </div>
+        <div>
+            <label for="volumeRange">Volume:</label>
+            <input type="range" id="volumeRange" min="0" max="1" step="0.1" value="1">
+            <span id="volumeValue">1</span>
+        </div>
+    </section>
+   
+
+    <section id="settings-section" class="card fade-in">
+        <h2>Settings</h2>
+        <div>
+            <label for="themeSelect">Choose Theme:</label>
+            <select id="themeSelect">
+                <option value="default">Default</option>
+                <option value="dark">Dark</option>
+                <option value="sepia">Sepia</option>
+            </select>
+        </div>
+        <div>
+            <label for="fontSelect">Choose Font:</label>
+            <select id="fontSelect">
+                <option value="Roboto">Roboto</option>
+                <option value="OpenDyslexic">OpenDyslexic</option>
+            </select>
+        </div>
+        <section id="output-section" class="card fade-in">
+            <h2>Story Time:</h2>
+            <div id="highlightedText"></div>
+        </section>
+        
+
+        <section id="pos-section" class="card fade-in">
+            <h2>Parts of Speech:</h2>
+            <div id="posTags">
+                <div id="nouns"></div>
+                <div id="verbs"></div>
+                <div id="adverbs"></div>
+                <div id="pronouns"></div>
+                <div id="adjectives"></div>
+            </div>
+            <button id="readPosButton">Read Parts of Speech</button>
+            <button id="stopPosButton">Stop Parts of Speech</button>
+            <div>
+                <button id="downloadNounsFlashcard">Download Nouns Flashcard</button>
+                <button id="downloadVerbsFlashcard">Download Verbs Flashcard</button>
+                <button id="downloadAdverbsFlashcard">Download Adverbs Flashcard</button>
+                <button id="downloadPronounsFlashcard">Download Pronouns Flashcard</button>
+                <button id="downloadAdjectivesFlashcard">Download Adjectives Flashcard</button>
+            </div>
+        </section>
+
+        <section id="summary-section" class="card fade-in">
+            <h2>Summary:</h2>
+            <div id="summaryText"></div>
+            <button id="readSummaryButton">Read Summary</button>
+            <button id="stopSummaryButton">Stop Summary</button>
+        </section>
+
+        <section id="qa-section" class="card fade-in">
+            <h2>Ask a Question:</h2>
+            <input type="text" id="questionInput" placeholder="Type your question here...">
+            <button id="qaButton">Get Answer</button>
+            <div id="answerOutput">
+                <h3>Answer:</h3>
+                <div id="answerText"></div>
+            </div>
+        </section>
+
+        <section id="vocabulary-section" class="card fade-in">
+            <h2>Vocabulary Builder</h2>
+            <div id="unfamiliar-word-input">
+                <input type="text" id="new-word" placeholder="Enter an unfamiliar word">
+                <button id="add-word">Add Word</button>
+            </div>
+            <div id="vocabulary-list"></div>
+            <button id="practice-vocabulary">Practice Vocabulary</button>
+        </section>
+
+    </div>
+
+    <div id="fab" class="fab" title="Toggle Voice Assistant">
+        <i class="fas fa-microphone"></i>
+    </div>
+
+    <script src="https://unpkg.com/compromise"></script>
+    <script src="script.js"></script>
+</body>
+</html>
